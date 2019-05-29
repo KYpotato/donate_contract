@@ -4,6 +4,8 @@ import "./SafeMath.sol";
 
 contract Donation {
 
+    using SafeMath for uint256;
+    
     address public recipient;
 
     uint public term;
@@ -16,12 +18,24 @@ contract Donation {
     uint public total_value;
 
     uint public num_of_donators;
-    address[] donators_list;
+    address payable[] donators_list;
     mapping (address => uint) public amount_list;
 
     modifier is_recipient(){
         require(msg.sender == recipient);
 
+        _;
+    }
+    
+    modifier is_passed_term(){
+        require(term < block.number);
+        
+        _;
+    }
+    
+    modifier is_not_passed_term(){
+        require(block.number <= term);
+        
         _;
     }
 
@@ -32,7 +46,7 @@ contract Donation {
 
         recipient = msg.sender;
 
-        term = _term;
+        term = block.number + _term;
         min = _min;
         max = _max;
         unit = _unit;
@@ -43,18 +57,18 @@ contract Donation {
         total_value = 0;
     }
 
-    function withdraw() public is_recipient {
-        msg.sender.transfer(total_value);
+    function withdraw() public is_recipient is_passed_term {
         total_value = 0;
+        msg.sender.transfer(total_value);
     }
 
     function cancel() public is_recipient {
         for(uint i = 0; i < donators_list.length; i++){
-
+            donators_list[i].transfer(amount_list[donators_list[i]]);
         }
     }
 
-    function donate() public payable {
+    function donate() public payable is_not_passed_term {
         require(min <= msg.value, "");
         require(msg.value <= max, "");
         require((msg.value % unit) == 0, "");
@@ -74,10 +88,10 @@ contract Donation {
         total_value = total_value.add(msg.value);
     }
 
-    function refund(uint _value) public {
+    function refund(uint _value) public is_not_passed_term {
         require(_value <= amount_list[msg.sender], "");
+        amount_list[msg.sender] = amount_list[msg.sender].sub(_value);
         msg.sender.transfer(_value);
-        amount_list[msg.sender] = amount_list[msg.sender].sub(_value;
     }
 
     function get_project_info() public view returns( uint, uint, uint, uint, uint, uint ) {
@@ -92,12 +106,12 @@ contract Donation {
     }
 
     function get_donation_info() public view returns( uint, address[] memory, uint[] memory) {
-        address[] memory address_list;
-        uint[] memory donate_list;
+        address[] memory address_list = new address[](donators_list.length);
+        uint[] memory donate_list = new uint[](donators_list.length);
 
         for(uint i = 0; i < donators_list.length; i++){
-            address_list.push(donators_list[i]);
-            donate_list.push(amount_list[donators_list[i]]);
+            address_list[i] = donators_list[i];
+            donate_list[i] = amount_list[donators_list[i]];
         }
 
         return (
