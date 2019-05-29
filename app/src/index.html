@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>MetaCoin | Truffle Webpack Demo w/ Frontend</title>
+    <title>Donation</title>
   </head>
   <style>
     input {
@@ -10,22 +10,27 @@
     }
   </style>
   <body>
-    <h1>MetaCoin — Example Truffle Dapp</h1>
-    <p>You have <strong class="balance">loading...</strong> META</p>
+    <h1>Donation</h1>
 
-    <h1>Send MetaCoin</h1>
+    <h1>Project Infomation</h1>
 
+    contract address:<label id="contract_address"></label><br>
+    total amount:<label id="total"></label><br>
+    number of donators:<label id="num_of_donators"></label><br>
+    term:<lavel id="term"></lavel><br>
+    min:<lavel id="min"></lavel><br>
+    max:<lavel id="max"></lavel><br>
+    unit:<lavel id="unit"></lavel><br>
+    lower limit:<lavel id="lowerlimit"></lavel><br>
+    upper limit:<lavel id="upperlimit"></lavel><br>
+
+    <h1>Your Information</h1>
+    you donated <label id="donated_amount">loading ...</label><br>
     <label for="amount">Amount:</label>
-    <input type="text" id="amount" placeholder="e.g. 95" />
-
-    <label for="receiver">To address:</label>
-    <input
-      type="text"
-      id="receiver"
-      placeholder="e.g. 0x93e66d9baea28c17d9fc393b53e3fbdd76899dae"
-    />
-
-    <button onclick="App.sendCoin()">Send MetaCoin</button>
+    <input type="text" id="amount_donate" placeholder="e.g. 95" />
+    <button onclick="App.donate()">donate eth</button><br>
+    <input type="text" id="amount_refund" placeholder="e.g. 95" />
+    <button onclick="App.refund()">refund eth</button>
 
     <p id="status"></p>
     <p>

@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import metaCoinArtifact from "../../build/contracts/MetaCoin.json";
+import donationArtifact from "../../build/contracts/Donation.json";
 
 const App = {
   web3: null,
@@ -12,9 +12,9 @@ const App = {
     try {
       // get contract instance
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = metaCoinArtifact.networks[networkId];
+      const deployedNetwork = donationArtifact.networks[networkId];
       this.meta = new web3.eth.Contract(
-        metaCoinArtifact.abi,
+        donationArtifact.abi,
         deployedNetwork.address,
       );
 
@@ -22,31 +22,58 @@ const App = {
       const accounts = await web3.eth.getAccounts();
       this.account = accounts[0];
 
-      this.refreshBalance();
+      this.refreshProjectInfo();
+      this.refreshAmount();
     } catch (error) {
       console.error("Could not connect to contract or chain.");
     }
   },
 
-  refreshBalance: async function() {
-    const { getBalance } = this.meta.methods;
-    const balance = await getBalance(this.account).call();
+  refreshProjectInfo: async function() {
+    const { get_project_info, get_donation_info } = this.meta.methods;
+    const project_info = get_project_info().call();
+    const donation_info = get_donation_info().call();
 
-    const balanceElement = document.getElementsByClassName("balance")[0];
-    balanceElement.innerHTML = balance;
+    document.getElementById("contract_address").value = "";
+    document.getElementById("total").value = project_info.total;
+    document.getElementById("num_of_donators").value = "";
+    document.getElementById("term").value = donation_info;
+    document.getElementById("min").value = donation_info;
+    document.getElementById("max").value = donation_info;
+    document.getElementById("unit").value = donation_info;
+    document.getElementById("lowerlimit").value = donation_info;
+    document.getElementById("upperlimit").value = donation_info;
   },
 
-  sendCoin: async function() {
-    const amount = parseInt(document.getElementById("amount").value);
-    const receiver = document.getElementById("receiver").value;
+  refreshAmount: async function() {
+    const { amount_list } = this.meta.methods;
+    const amount = await amount_list(this.account).call();
 
-    this.setStatus("Initiating transaction... (please wait)");
+    document.getElementById("donated_amount").innerHTML = amount;
+  },
 
-    const { sendCoin } = this.meta.methods;
-    await sendCoin(receiver, amount).send({ from: this.account });
+  donate: async function() {
+    const { donate } = this.meta.methods;
+    const amount = document.getElementById('amount_donate');
 
-    this.setStatus("Transaction complete!");
-    this.refreshBalance();
+    this.setStatus("donating... (please wait)");
+    await donate.send({from: this.account, value: this.web3.utils.toWei(amount.value, "ether")})
+    this.setStatus("donate complete!");
+
+    this.refreshProjectInfo();
+    this.refreshAmount();
+  },
+
+  refund: async function() {
+    const { refund } = this.meta.methods;
+    const amount = document.getElementById("amount_refund");
+
+    this.setStatus("refund... (please wait)");
+    await refund(amount).send({from: this.account});
+    this.setStatus("refund complete!");
+
+    this.refreshProjectInfo()
+    this.refreshAmount()
   },
 
   setStatus: function(message) {
