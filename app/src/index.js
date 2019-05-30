@@ -5,6 +5,7 @@ const App = {
   web3: null,
   account: null,
   meta: null,
+  contract_address: null,
 
   start: async function() {
     const { web3 } = this;
@@ -17,6 +18,8 @@ const App = {
         donationArtifact.abi,
         deployedNetwork.address,
       );
+
+      this.contract_address = deployedNetwork.address;
 
       // get accounts
       const accounts = await web3.eth.getAccounts();
@@ -31,18 +34,18 @@ const App = {
 
   refreshProjectInfo: async function() {
     const { get_project_info, get_donation_info } = this.meta.methods;
-    const project_info = get_project_info().call();
-    const donation_info = get_donation_info().call();
+    const project_info = await get_project_info().call();
+    const donation_info = await get_donation_info().call();
 
-    document.getElementById("contract_address").value = "";
-    document.getElementById("total").value = project_info.total;
-    document.getElementById("num_of_donators").value = "";
-    document.getElementById("term").value = donation_info;
-    document.getElementById("min").value = donation_info;
-    document.getElementById("max").value = donation_info;
-    document.getElementById("unit").value = donation_info;
-    document.getElementById("lowerlimit").value = donation_info;
-    document.getElementById("upperlimit").value = donation_info;
+    document.getElementById("contract_address").innerHTML = this.contract_address;
+    document.getElementById("total").innerHTML = this.web3.utils.fromWei(donation_info[0], "ether") + " ether";
+    document.getElementById("num_of_donators").innerHTML = donation_info[1].length + " addresses";
+    document.getElementById("term").innerHTML = project_info[0] + " block";
+    document.getElementById("min").innerHTML = this.web3.utils.fromWei(project_info[1], "ether") + " ether";
+    document.getElementById("max").innerHTML = this.web3.utils.fromWei(project_info[2], "ether") + " ether";
+    document.getElementById("unit").innerHTML = this.web3.utils.fromWei(project_info[3], "ether") + " ehter";
+    document.getElementById("lowerlimit").innerHTML = this.web3.utils.fromWei(project_info[4], "ether") + " ehter";
+    document.getElementById("upperlimit").innerHTML = this.web3.utils.fromWei(project_info[5], "ether") + " ehter";
   },
 
   refreshAmount: async function() {
