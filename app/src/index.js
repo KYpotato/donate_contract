@@ -49,7 +49,7 @@ const App = {
     const { amount_list } = this.meta.methods;
     const amount = await amount_list(this.account).call();
 
-    document.getElementById("donated_amount").innerHTML = amount;
+    document.getElementById("donated_amount").innerHTML = this.web3.utils.fromWei(amount, "ether");
   },
 
   donate: async function() {
@@ -57,7 +57,8 @@ const App = {
     const amount = document.getElementById('amount_donate');
 
     this.setStatus("donating... (please wait)");
-    await donate.send({from: this.account, value: this.web3.utils.toWei(amount.value, "ether")})
+    console.log(this.account);
+    await donate().send({gas: 140000, value: this.web3.utils.toWei(amount.value, "ether"), from: this.account})
     this.setStatus("donate complete!");
 
     this.refreshProjectInfo();
@@ -69,7 +70,7 @@ const App = {
     const amount = document.getElementById("amount_refund");
 
     this.setStatus("refund... (please wait)");
-    await refund(amount).send({from: this.account});
+    await refund(this.web3.utils.toWei(amount.value, "ether")).send({from: this.account});
     this.setStatus("refund complete!");
 
     this.refreshProjectInfo()
