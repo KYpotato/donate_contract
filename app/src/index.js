@@ -52,7 +52,7 @@ const App = {
     const { amount_list } = this.meta.methods;
     const amount = await amount_list(this.account).call();
 
-    document.getElementById("donated_amount").innerHTML = this.web3.utils.fromWei(amount, "ether");
+    document.getElementById("donated_amount").innerHTML = this.web3.utils.fromWei(amount, "ether") + " ether";
   },
 
   donate: async function() {

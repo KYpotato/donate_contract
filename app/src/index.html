@@ -14,22 +14,56 @@
 
     <h1>Project Infomation</h1>
 
-    contract address: <label id="contract_address"></label><br>
-    total amount: <label id="total"></label><br>
-    number of donators: <label id="num_of_donators"></label><br>
-    term: <lavel id="term"></lavel><br>
-    min: <lavel id="min"></lavel><br>
-    max: <lavel id="max"></lavel><br>
-    unit: <lavel id="unit"></lavel><br>
-    lower limit: <lavel id="lowerlimit"></lavel><br>
-    upper limit: <lavel id="upperlimit"></lavel><br>
+    <table>
+      <tr>
+        <td>contract address: </td>
+        <td colspan="2"><label id="contract_address"></label></td>
+      </tr>
+      <tr>
+        <td>total amount: </td>
+        <td><label id="total"></label></td>
+      </tr>
+      <tr>
+        <td>number of donators: </td>
+        <td><label id="num_of_donators"></label></td>
+      </tr>
+      <tr>
+        <td>term: </td>
+        <td><lavel id="term"></lavel></td>
+      </tr>
+      <tr>
+        <td>min: </td>
+        <td><lavel id="min"></lavel></td>
+      </tr>
+      <tr>
+        <td>max: </td>
+        <td><lavel id="max"></lavel></td>
+      </tr>
+      <tr>
+        <td>unit: </td>
+        <td><lavel id="unit"></lavel></td>
+      </tr>
+      <tr>
+        <td>limit: </td>
+        <td><lavel id="lowerlimit"></lavel></td>
+      </tr>
+      <tr>
+        <td>upper limit: </td>
+        <td><lavel id="upperlimit"></lavel></td>
+      </tr>
+    </table>
 
     <h1>Your Information</h1>
+    <p>
     you donated <label id="donated_amount">loading ...</label><br>
-    <label for="amount">Amount:</label>
-    <input type="text" id="amount_donate" placeholder="e.g. 95" />
+  </p>
+
+    <label>donate</label><br>
+    <input type="text" id="amount_donate" placeholder="e.g. 0.5" style="display: inline" />
     <button onclick="App.donate()">donate eth</button><br>
-    <input type="text" id="amount_refund" placeholder="e.g. 95" />
+
+    <label>refund</label><br>
+    <input type="text" id="amount_refund" placeholder="e.g. 0.1" style="display: inline" />
     <button onclick="App.refund()">refund eth</button>
 
     <p id="status"></p>
