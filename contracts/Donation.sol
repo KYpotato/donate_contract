@@ -121,4 +121,8 @@ contract Donation {
         );
     }
 
+    function check_passed_term() public returns ( bool ) {
+        return term < block.number;
+    }
+
 }
