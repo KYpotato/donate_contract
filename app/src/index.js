@@ -33,10 +33,31 @@ const App = {
   },
 
   refreshProjectInfo: async function() {
-    const { get_project_info, get_donation_info } = this.meta.methods;
-    const project_info = await get_project_info().call();
-    const donation_info = await get_donation_info().call();
+    const { get_project_info, get_donation_info, check_passed_term, state } = this.meta.methods;
+    let project_info = await get_project_info().call();
+    let donation_info = await get_donation_info().call();
+    let is_passed_deadline = await check_passed_term().call();
+    let project_state = await state().call();
 
+    console.log(project_info);
+    console.log(donation_info);
+    console.log(is_passed_deadline);
+    console.log(project_state);
+
+    let state_string;
+    if (project_state == 1) {
+      state_string = "This project has benn canceled";
+    }
+    else{
+      if(is_passed_deadline) {
+        state_string = "The deadline has passed";
+      }
+      else {
+        state_string = "This project is open";
+      }
+    }
+
+    document.getElementById("state").innerHTML = state_string;
     document.getElementById("contract_address").innerHTML = this.contract_address;
     document.getElementById("total").innerHTML = this.web3.utils.fromWei(donation_info[0], "ether") + " ether";
     document.getElementById("num_of_donators").innerHTML = donation_info[1].length + " addresses";
@@ -52,7 +73,7 @@ const App = {
     const { amount_list } = this.meta.methods;
     const amount = await amount_list(this.account).call();
 
-    document.getElementById("donated_amount").innerHTML = this.web3.utils.fromWei(amount, "ether") + " ether";
+    document.getElementById("donated_amount").innerHTML = (amount != null ? this.web3.utils.fromWei(amount, "ether") : "0") + " ether";
   },
 
   donate: async function() {
@@ -61,6 +82,8 @@ const App = {
 
     this.setStatus("donating... (please wait)");
     console.log(this.account);
+    console.log(amount.value);
+    console.log(this.web3.utils.toWei(amount.value, "ether"));
     await donate().send({gas: 140000, value: this.web3.utils.toWei(amount.value, "ether"), from: this.account})
     this.setStatus("donate complete!");
 
