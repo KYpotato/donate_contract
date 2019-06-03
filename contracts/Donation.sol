@@ -5,7 +5,10 @@ import "./SafeMath.sol";
 contract Donation {
 
     using SafeMath for uint256;
+
+    enum State { Open, Canceled }
     
+    State public state;
     address public recipient;
 
     uint public term;
@@ -39,6 +42,12 @@ contract Donation {
         _;
     }
 
+    modifier is_not_canceled(){
+        require(state != State.Canceled);
+
+        _;
+    }
+
     constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit) public {
 
         require(_min <= _max);
@@ -55,20 +64,27 @@ contract Donation {
 
         num_of_donators = 0;
         total_value = 0;
+
+        state = State.Open;
     }
 
-    function withdraw() public is_recipient is_passed_term {
+    function withdraw() public is_recipient is_passed_term is_not_canceled {
         total_value = 0;
         msg.sender.transfer(total_value);
     }
 
-    function cancel() public is_recipient {
+    function cancel_and_refund() public is_recipient is_not_canceled {
         for(uint i = 0; i < donators_list.length; i++){
             donators_list[i].transfer(amount_list[donators_list[i]]);
         }
+        state = State.Canceled;
     }
 
-    function donate() public payable is_not_passed_term {
+    function cancel() public is_recipient is_not_canceled {
+        state = State.Canceled;
+    }
+
+    function donate() public payable is_not_passed_term is_not_canceled {
         require(min <= msg.value, "");
         require(msg.value <= max, "");
         require((msg.value % unit) == 0, "");
@@ -90,8 +106,16 @@ contract Donation {
 
     function refund(uint _value) public is_not_passed_term {
         require(_value <= amount_list[msg.sender], "");
-        amount_list[msg.sender] = amount_list[msg.sender].sub(_value);
-        msg.sender.transfer(_value);
+
+        uint refund_value;
+        if(amount_list[msg.sender].sub(_value) < unit){
+            refund_value = amount_list[msg.sender].sub(_value);
+        }
+        else {
+            refund_value = _value;
+        }
+        amount_list[msg.sender] = amount_list[msg.sender].sub(refund_value);
+        msg.sender.transfer(refund_value);
     }
 
     function get_project_info() public view returns( uint, uint, uint, uint, uint, uint ) {
@@ -121,7 +145,7 @@ contract Donation {
         );
     }
 
-    function check_passed_term() public returns ( bool ) {
+    function check_passed_term() view public returns ( bool ) {
         return term < block.number;
     }
 
