@@ -83,13 +83,8 @@ contract Donation {
     function cancel_and_refund() public is_recipient is_not_canceled {
         for(uint i = 0; i < donors_list.length; i++){
             donors_list[i].transfer(amount_list[donors_list[i]]);
+            emit Refund(donors_list[i], amount_list[donors_list[i]]);
         }
-        state = State.Canceled;
-
-        emit Cancel();
-    }
-
-    function cancel() public is_recipient is_not_canceled {
         state = State.Canceled;
 
         emit Cancel();

@@ -152,11 +152,6 @@ const App = {
     await cancel_and_refund().send({from: this.account});
   },
 
-  cancel: async function() {
-    const { cancel } = this.meta.methods;
-    await cancel().send({from: this.account});
-  },
-
   withdraw: async function() {
     const { withdraw } = this.meta.methods;
     await withdraw().send({from: this.account});
