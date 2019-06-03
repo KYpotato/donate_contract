@@ -25,33 +25,33 @@ contract Donation {
     mapping (address => uint) public amount_list;
 
     modifier is_recipient(){
-        require(msg.sender == recipient);
+        require(msg.sender == recipient, "Need to exe by recipient address");
 
         _;
     }
     
     modifier is_passed_term(){
-        require(term < block.number);
+        require(term < block.number, "The deadline of this project has passed");
         
         _;
     }
     
     modifier is_not_passed_term(){
-        require(block.number <= term);
+        require(block.number <= term, "The deadline of this project has not come");
         
         _;
     }
 
     modifier is_not_canceled(){
-        require(state != State.Canceled);
+        require(state != State.Canceled, "This project has been canceled");
 
         _;
     }
 
     constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit) public {
 
-        require(_min <= _max);
-        require(_lower_limit < _upper_limit);
+        require(_min <= _max, "Invalid min and max");
+        require(_lower_limit < _upper_limit, "Invalid lower limit and upper limit");
 
         recipient = msg.sender;
 
@@ -85,11 +85,11 @@ contract Donation {
     }
 
     function donate() public payable is_not_passed_term is_not_canceled {
-        require(min <= msg.value, "");
-        require(msg.value <= max, "");
-        require((msg.value % unit) == 0, "");
+        require(min <= msg.value, "The donation amount should be not greeater than min parameter");
+        require(msg.value <= max, "The donation amount should be not less than max parameter");
+        require((msg.value % unit) == 0, "The donation amount should be multiple of unit parameter");
 
-        require((total_value + msg.value) <= upper_limit, "");
+        require((total_value + msg.value) <= upper_limit, "The Donation was canceld because it will reach the upper limit parameter");
 
         uint index;
         for(index = 0; index < donators_list.length; index++){
@@ -105,7 +105,7 @@ contract Donation {
     }
 
     function refund(uint _value) public is_not_passed_term {
-        require(_value <= amount_list[msg.sender], "");
+        require(_value <= amount_list[msg.sender], "The refund amount should be no greater than your donation amount");
 
         uint refund_value;
         if(amount_list[msg.sender].sub(_value) < unit){
