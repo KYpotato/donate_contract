@@ -91,7 +91,7 @@ contract Donation {
 
     function cancel() public is_recipient is_not_canceled {
         state = State.Canceled;
-        
+
         emit Cancel();
     }
 
@@ -99,8 +99,6 @@ contract Donation {
         require(min <= msg.value, "The donation amount should be not greeater than min parameter");
         require(msg.value <= max, "The donation amount should be not less than max parameter");
         require((msg.value % unit) == 0, "The donation amount should be multiple of unit parameter");
-
-        require((total_value + msg.value) <= upper_limit, "The Donation was canceld because it will reach the upper limit parameter");
 
         uint index;
         for(index = 0; index < donators_list.length; index++){
@@ -111,10 +109,20 @@ contract Donation {
         if(donators_list.length <= index){
             donators_list.push(msg.sender);
         }
-        amount_list[msg.sender] = amount_list[msg.sender].add(msg.value);
-        total_value = total_value.add(msg.value);
+        if( total_value.add(msg.value) <= upper_limit ) {
+            amount_list[msg.sender] = amount_list[msg.sender].add(msg.value);
+            total_value = total_value.add(msg.value);
 
-        emit Donate(msg.sender, msg.value);
+            emit Donate(msg.sender, msg.value);
+        }
+        else {
+            uint donate_value = upper_limit.sub(total_value);
+            amount_list[msg.sender] = amount_list[msg.sender].add(donate_value);
+            total_value = total_value.add(donate_value);
+            msg.sender.transfer(msg.value.sub(donate_value));
+
+            emit Donate(msg.sender, donate_value);
+        }
     }
 
     function refund(uint _value) public is_not_passed_term {
