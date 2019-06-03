@@ -20,14 +20,14 @@ contract Donation {
 
     uint public total_value;
 
-    uint public num_of_donators;
-    address payable[] donators_list;
+    uint public num_of_donors;
+    address payable[] donors_list;
     mapping (address => uint) public amount_list;
 
     event Cancel();
     event Withdraw();
-    event Donate(address indexed Donater, uint amount);
-    event Refund(address indexed Donater, uint amount);
+    event Donate(address indexed Donor, uint amount);
+    event Refund(address indexed Donor, uint amount);
 
     modifier is_recipient(){
         require(msg.sender == recipient, "Need to exe by recipient address");
@@ -67,7 +67,7 @@ contract Donation {
         upper_limit = _upper_limit;
         lower_limit = _lower_limit;
 
-        num_of_donators = 0;
+        num_of_donors = 0;
         total_value = 0;
 
         state = State.Open;
@@ -81,8 +81,8 @@ contract Donation {
     }
 
     function cancel_and_refund() public is_recipient is_not_canceled {
-        for(uint i = 0; i < donators_list.length; i++){
-            donators_list[i].transfer(amount_list[donators_list[i]]);
+        for(uint i = 0; i < donors_list.length; i++){
+            donors_list[i].transfer(amount_list[donors_list[i]]);
         }
         state = State.Canceled;
 
@@ -101,13 +101,13 @@ contract Donation {
         require((msg.value % unit) == 0, "The donation amount should be multiple of unit parameter");
 
         uint index;
-        for(index = 0; index < donators_list.length; index++){
-            if(donators_list[index] == msg.sender){
+        for(index = 0; index < donors_list.length; index++){
+            if(donors_list[index] == msg.sender){
                 break;
             }
         }
-        if(donators_list.length <= index){
-            donators_list.push(msg.sender);
+        if(donors_list.length <= index){
+            donors_list.push(msg.sender);
         }
         if( total_value.add(msg.value) <= upper_limit ) {
             amount_list[msg.sender] = amount_list[msg.sender].add(msg.value);
@@ -153,12 +153,12 @@ contract Donation {
     }
 
     function get_donation_info() public view returns( uint, address[] memory, uint[] memory) {
-        address[] memory address_list = new address[](donators_list.length);
-        uint[] memory donate_list = new uint[](donators_list.length);
+        address[] memory address_list = new address[](donors_list.length);
+        uint[] memory donate_list = new uint[](donors_list.length);
 
-        for(uint i = 0; i < donators_list.length; i++){
-            address_list[i] = donators_list[i];
-            donate_list[i] = amount_list[donators_list[i]];
+        for(uint i = 0; i < donors_list.length; i++){
+            address_list[i] = donors_list[i];
+            donate_list[i] = amount_list[donors_list[i]];
         }
 
         return (

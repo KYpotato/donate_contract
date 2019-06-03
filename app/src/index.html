@@ -28,8 +28,8 @@
         <td><label id="total"></label></td>
       </tr>
       <tr>
-        <td>number of donators: </td>
-        <td><label id="num_of_donators"></label></td>
+        <td>number of donors: </td>
+        <td><label id="num_of_donors"></label></td>
       </tr>
       <tr>
         <td>term: </td>
@@ -57,18 +57,28 @@
       </tr>
     </table>
 
-    <h1>Your Information</h1>
-    <p>
-    you donated <label id="donated_amount">loading ...</label><br>
-    </p>
+    <div id="for_donor">
+      <h1>Your Information</h1>
+      <p>
+      you donated <label id="donated_amount">loading ...</label><br>
+      </p>
 
-    <label>donate</label><br>
-    <input type="text" id="amount_donate" placeholder="e.g. 0.5" style="display: inline" />
-    <button onclick="App.donate()">donate eth</button><br>
+      <label>donate</label><br>
+      <input type="text" id="amount_donate" placeholder="e.g. 0.5" style="display: inline" />
+      <button onclick="App.donate()">donate eth</button><br>
 
-    <label>refund</label><br>
-    <input type="text" id="amount_refund" placeholder="e.g. 0.1" style="display: inline" />
-    <button onclick="App.refund()">refund eth</button>
+      <label>refund</label><br>
+      <input type="text" id="amount_refund" placeholder="e.g. 0.1" style="display: inline" />
+      <button onclick="App.refund()">refund eth</button>
+    </div>
+
+    <div id="for_recipient">
+      <h1>Functions for recipient</h1>
+      <button onclick="App.cancel_and_refund()">cancel and refund</button>
+      <button onclick="App.cancel()">cancel</button>
+      <br>
+      <button onclick="App.withdraw()">withdraw</button>
+    </div>
 
     <p id="status"></p>
     <p>
