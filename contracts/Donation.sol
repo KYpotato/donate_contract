@@ -24,6 +24,11 @@ contract Donation {
     address payable[] donators_list;
     mapping (address => uint) public amount_list;
 
+    event Cancel();
+    event Withdraw();
+    event Donate(address indexed Donater, uint amount);
+    event Refund(address indexed Donater, uint amount);
+
     modifier is_recipient(){
         require(msg.sender == recipient, "Need to exe by recipient address");
 
@@ -71,6 +76,8 @@ contract Donation {
     function withdraw() public is_recipient is_passed_term is_not_canceled {
         total_value = 0;
         msg.sender.transfer(total_value);
+
+        emit Withdraw();
     }
 
     function cancel_and_refund() public is_recipient is_not_canceled {
@@ -78,10 +85,14 @@ contract Donation {
             donators_list[i].transfer(amount_list[donators_list[i]]);
         }
         state = State.Canceled;
+
+        emit Cancel();
     }
 
     function cancel() public is_recipient is_not_canceled {
         state = State.Canceled;
+        
+        emit Cancel();
     }
 
     function donate() public payable is_not_passed_term is_not_canceled {
@@ -102,6 +113,8 @@ contract Donation {
         }
         amount_list[msg.sender] = amount_list[msg.sender].add(msg.value);
         total_value = total_value.add(msg.value);
+
+        emit Donate(msg.sender, msg.value);
     }
 
     function refund(uint _value) public is_not_passed_term {
@@ -116,6 +129,8 @@ contract Donation {
         }
         amount_list[msg.sender] = amount_list[msg.sender].sub(refund_value);
         msg.sender.transfer(refund_value);
+
+        emit Refund(msg.sender, refund_value);
     }
 
     function get_project_info() public view returns( uint, uint, uint, uint, uint, uint ) {
