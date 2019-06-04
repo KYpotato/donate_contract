@@ -19,11 +19,15 @@ const App = {
         deployedNetwork.address,
       );
 
+      console.log("contract address", deployedNetwork.address);
+
       this.contract_address = deployedNetwork.address;
 
       // get accounts
       const accounts = await web3.eth.getAccounts();
       this.account = accounts[0];
+
+      console.log("account", this.account);
 
       await this.refreshProjectInfo();
 
@@ -49,15 +53,16 @@ const App = {
   },
 
   refreshProjectInfo: async function() {
+    console.log(this.meta.methods);
     const { get_project_info, get_donation_info, check_passed_term, state } = this.meta.methods;
+    console.log(get_project_info());
     let project_info = await get_project_info().call();
-    let donation_info = await get_donation_info().call();
-    let is_passed_deadline = await check_passed_term().call();
-    let project_state = await state().call();
-
     console.log(project_info);
+    let donation_info = await get_donation_info().call();
     console.log(donation_info);
+    let is_passed_deadline = await check_passed_term().call();
     console.log(is_passed_deadline);
+    let project_state = await state().call();
     console.log(project_state);
 
     let state_string;
@@ -83,6 +88,12 @@ const App = {
     document.getElementById("unit").innerHTML = this.web3.utils.fromWei(project_info[3], "ether") + " ehter";
     document.getElementById("lowerlimit").innerHTML = this.web3.utils.fromWei(project_info[4], "ether") + " ehter";
     document.getElementById("upperlimit").innerHTML = this.web3.utils.fromWei(project_info[5], "ether") + " ehter";
+
+    for(var i = 0; i < donation_info[1].length; i++) {
+      console.log(i, donation_info[1][i]);
+      console.log(i, this.web3.utils.fromWei(donation_info[2][i], "ether"));
+      $("#donor_list").append("<tr><td>" + donation_info[1][i] + "</td><td>" + this.web3.utils.fromWei(donation_info[2][i], "ether") + "</td></tr>");
+    }
   },
 
   refreshAmount: async function() {
