@@ -91,8 +91,8 @@ contract Donation {
     }
 
     function donate() public payable is_not_passed_term is_not_canceled {
-        require(min <= msg.value, "The donation amount should be not greeater than min parameter");
-        require(msg.value <= max, "The donation amount should be not less than max parameter");
+        require(min <= msg.value, "The donation amount is less than min parameter");
+        require(msg.value <= max, "The donation amount is greater than max parameter");
         require((msg.value % unit) == 0, "The donation amount should be multiple of unit parameter");
 
         uint index;
@@ -103,15 +103,25 @@ contract Donation {
         }
         if(donors_list.length <= index){
             donors_list.push(msg.sender);
+            amount_list[msg.sender] = 0;
         }
-        if( total_value.add(msg.value) <= upper_limit ) {
-            amount_list[msg.sender] = amount_list[msg.sender].add(msg.value);
-            total_value = total_value.add(msg.value);
 
-            emit Donate(msg.sender, msg.value);
+        if(total_value.add(msg.value) <= upper_limit &&
+            amount_list[msg.sender].add(msg.value) <= max) {
+                amount_list[msg.sender] = amount_list[msg.sender].add(msg.value);
+                total_value = total_value.add(msg.value);
+
+                emit Donate(msg.sender, msg.value);
         }
         else {
-            uint donate_value = upper_limit.sub(total_value);
+            uint donate_value;
+            if(upper_limit.sub(total_value) < max.sub(amount_list[msg.sender])){
+                donate_value = upper_limit.sub(total_value);
+            }
+            else {
+                donate_value = max.sub(amount_list[msg.sender]);
+            }
+            
             amount_list[msg.sender] = amount_list[msg.sender].add(donate_value);
             total_value = total_value.add(donate_value);
             msg.sender.transfer(msg.value.sub(donate_value));
