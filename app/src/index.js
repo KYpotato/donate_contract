@@ -86,8 +86,8 @@ const App = {
     document.getElementById("min").innerHTML = this.web3.utils.fromWei(project_info[1], "ether") + " ether";
     document.getElementById("max").innerHTML = this.web3.utils.fromWei(project_info[2], "ether") + " ether";
     document.getElementById("unit").innerHTML = this.web3.utils.fromWei(project_info[3], "ether") + " ehter";
-    document.getElementById("lowerlimit").innerHTML = this.web3.utils.fromWei(project_info[4], "ether") + " ehter";
-    document.getElementById("upperlimit").innerHTML = this.web3.utils.fromWei(project_info[5], "ether") + " ehter";
+    document.getElementById("upperlimit").innerHTML = this.web3.utils.fromWei(project_info[4], "ether") + " ehter";
+    document.getElementById("lowerlimit").innerHTML = this.web3.utils.fromWei(project_info[5], "ether") + " ehter";
 
     for(var i = 0; i < donation_info[1].length; i++) {
       console.log(i, donation_info[1][i]);
