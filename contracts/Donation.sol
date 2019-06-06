@@ -74,6 +74,7 @@ contract Donation {
     }
 
     function withdraw() public is_recipient is_passed_term is_not_canceled {
+        require(lower_limit <= total_value, "This project has not achived the goal");
         total_value = 0;
         msg.sender.transfer(total_value);
 
@@ -130,7 +131,7 @@ contract Donation {
         }
     }
 
-    function refund(uint _value) public is_not_passed_term {
+    function _refund(uint _value) private {
         require(_value <= amount_list[msg.sender], "The refund amount should be no greater than your donation amount");
 
         uint refund_value;
@@ -144,6 +145,17 @@ contract Donation {
         msg.sender.transfer(refund_value);
 
         emit Refund(msg.sender, refund_value);
+
+    }
+
+    function refund(uint _value) public is_not_passed_term {
+        _refund(_value);
+    }
+
+    function refund_after_deadline() public is_passed_term{
+        require(total_value < lower_limit, "This project has achieved the goal");
+
+        _refund(amount_list[msg.sender]);
     }
 
     function get_project_info() public view returns( uint, uint, uint, uint, uint, uint ) {
