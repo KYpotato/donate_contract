@@ -42,7 +42,7 @@ contract Donation {
     }
     
     modifier is_not_passed_term(){
-        require(block.number <= term, "The deadline of this project has not come");
+        require(block.number <= term, "This project has closed");
         
         _;
     }
@@ -132,15 +132,17 @@ contract Donation {
 
     function _refund(uint _value) private {
         require(_value <= amount_list[msg.sender], "The refund amount should be no greater than your donation amount");
+        require((_value % unit) == 0, "The donation amount should be multiple of unit parameter");
 
         uint refund_value;
-        if(amount_list[msg.sender].sub(_value) < unit){
+        if(amount_list[msg.sender].sub(_value) < min){
             refund_value = amount_list[msg.sender];
         }
         else {
             refund_value = _value;
         }
         amount_list[msg.sender] = amount_list[msg.sender].sub(refund_value);
+        total_value = total_value.sub(refund_value);
         msg.sender.transfer(refund_value);
 
         emit Refund(msg.sender, refund_value);
@@ -151,7 +153,7 @@ contract Donation {
         _refund(_value);
     }
 
-    function refund_after_deadline() public is_passed_term {
+    function refund_after_deadline() public is_passed_term is_not_canceled {
         require(total_value < lower_limit, "This project has achieved the goal");
 
         _refund(amount_list[msg.sender]);
