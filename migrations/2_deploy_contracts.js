@@ -11,36 +11,10 @@ module.exports = function(deployer) {
       web3.utils.toWei("0.005", "ether"), // unit
       web3.utils.toWei("1", "ether"),     // upper limit
       web3.utils.toWei("0.5", "ether"),   // lower limit
-      // Project_list.address
+      Project_list.address
       );
     console.log(Project_list.address);
     console.log(typeof Project_list.address);
     return;
   })
-
-  // deployer.deploy(Donation, 
-  //         100, // term
-  //         web3.utils.toWei("0.01", "ether"),  // min
-  //         web3.utils.toWei("0.1", "ether"),   // max
-  //         web3.utils.toWei("0.005", "ether"), // unit
-  //         web3.utils.toWei("1", "ether"),     // upper limit
-  //         web3.utils.toWei("0.5", "ether"));  // lower limit
-
-  // deploy(Project_list)
-  //   // wait until the contract is deployed
-  //   .then(() => deployer.deployed())
-  //   .then(() => {
-  //     console.log(Project_list.address);
-  //     deployer.deploy(Donation, 
-  //       100, // term
-  //       web3.utils.toWei("0.01", "ether"),  // min
-  //       web3.utils.toWei("0.1", "ether"),   // max
-  //       web3.utils.toWei("0.005", "ether"), // unit
-  //       web3.utils.toWei("1", "ether"),     // upper limit
-  //       web3.utils.toWei("0.5", "ether"))  // lower limit
-  //         .then(() => deployer.deployed())
-  //         .then(() => {
-  //           Project_list.register(Donation.address);
-  //         })
-  //   })
 };

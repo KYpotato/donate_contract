@@ -217,7 +217,7 @@ const App = {
 
     // try{
       console.log('bytecode');
-      console.log(donationArtifact.abi);
+      console.log(donationArtifact.bytecode);
       const contract = new web3.eth.Contract(donationArtifact.abi);
       console.log('contract');
       console.log(contract);
@@ -232,19 +232,19 @@ const App = {
           App.web3.utils.toWei(document.getElementById('unit').value, "ether"), // unit
           App.web3.utils.toWei(document.getElementById('upper_limit').value, "ether"),     // upper limit
           App.web3.utils.toWei(document.getElementById('lower_limit').value, "ether"),   // lower limit
-          // this.project_list_contract_address      // project list contract address
+          this.project_list_contract_address      // project list contract address
         ]
       }, (err, res) => {
         console.log('result');
         console.log(err);
         console.log(res);
       })
-      .send({from: this.account});
+      .send({from: this.account, gas: 4700000, gasPrice:100});
       console.log(deployedContract);
 
       console.log(deployedContract.options.address);
       this.set_donation_address(deployedContract.options.address);
-      await this.donation_meta.methods._register_to_project_list(this.project_list_contract_address).send({from: this.account});
+      // await this.donation_meta.methods._register_to_project_list(this.project_list_contract_address).send({from: this.account});
       window.location.href = "./index.html";
     // }
     // catch(err) {

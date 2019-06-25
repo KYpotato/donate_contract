@@ -55,8 +55,8 @@ contract Donation {
         _;
     }
 
-    // constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit, address _list_address) public {
-    constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit) public {
+    constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit, address _list_address) public {
+    // constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit) public {
 
         require(_min <= _max, "Invalid min and max");
         require(_lower_limit < _upper_limit, "Invalid lower limit and upper limit");
@@ -75,18 +75,17 @@ contract Donation {
 
         state = State.Open;
 
-        // _register_to_project_list(msg.sender);
+        // _register_to_project_list(_list_address);
 
-        // project_list = Project_list(_list_address);
-        // project_list.register_project();
-    }
-
-    // function _register_to_project_list() public {
-    function _register_to_project_list(address _list_address) public {
         project_list = Project_list(_list_address);
-
         project_list.register_project(msg.sender);
     }
+
+    // function _register_to_project_list(address _list_address) private {
+    //     project_list = Project_list(_list_address);
+
+    //     project_list.register_project(msg.sender);
+    // }
 
     function withdraw() public is_recipient is_passed_term is_not_canceled {
         require(lower_limit <= total_value, "This project has not achived the goal");
