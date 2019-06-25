@@ -17,6 +17,8 @@ const App = {
       let page = window.location.href.split('/').pop();
       console.log(page);
 
+      document.getElementById('project_info_div').style.display = 'none';
+
       // get contract instance
       const networkId = await web3.eth.net.getId();
       // console.log(networkId);
@@ -76,11 +78,13 @@ const App = {
     let recipient_address = await this.get_recipient();
     console.log("recipient", recipient_address);
     if( this.account == recipient_address) {
+      console.log('recipient');
       document.getElementById("for_donor").style.display = "none";
-      document.getElementById("for_recipient").style.display = "display";
+      document.getElementById("for_recipient").style.display = "block";
     }
     else {
-      document.getElementById("for_donor").style.display = "display";
+      console.log('donor');
+      document.getElementById("for_donor").style.display = "block";
       document.getElementById("for_recipient").style.display = "none";
       this.refreshAmount();
     }
@@ -278,6 +282,7 @@ const App = {
     );
     // window.location.href = "./project.html";
     await this.displayProjectInfo();
+    document.getElementById('project_info_div').style.display = 'block';
   }
 };
 
