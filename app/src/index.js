@@ -8,7 +8,7 @@ const App = {
   donation_meta: null,
   donation_contract_address: null,
   project_list_meta: null,
-  project_list_contract_address: null,
+  project_list_contract_address: "0x186415E0ecfEC1f19d7FA92AeB76A7D8f36cFdf9",
 
   start: async function() {
     const { web3 } = this;
@@ -18,7 +18,7 @@ const App = {
       console.log(page);
 
       // get contract instance
-      const networkId = await web3.eth.net.getId();
+      // const networkId = await web3.eth.net.getId();
       // console.log(networkId);
 
       // get accounts
@@ -26,10 +26,10 @@ const App = {
       this.account = accounts[0];
       console.log("account", this.account);
 
-      const projectListDeployedNetwork = projectListArtifact.networks[networkId];
+      // const projectListDeployedNetwork = projectListArtifact.networks[networkId];
       // console.log(projectListArtifact);
       // console.log(projectListDeployedNetwork);
-      this.project_list_contract_address = projectListDeployedNetwork.address;
+      // this.project_list_contract_address = projectListDeployedNetwork.address;
       this.project_list_meta = new web3.eth.Contract(
         projectListArtifact.abi,
         this.project_list_contract_address,
@@ -43,7 +43,7 @@ const App = {
         case 'project.html':
           document.getElementById('project_info_div').style.display = 'none';
           this.refresh_project_list();
-          const donationDeployedNetwork = donationArtifact.networks[networkId];
+          // const donationDeployedNetwork = donationArtifact.networks[networkId];
           // console.log(donationArtifact);
           // console.log(donationDeployedNetwork);
           // this.donation_contract_address = donationDeployedNetwork.address;
@@ -135,6 +135,10 @@ const App = {
     document.getElementById("upperlimit").innerHTML = this.web3.utils.fromWei(project_info[4], "ether") + " ehter";
     document.getElementById("lowerlimit").innerHTML = this.web3.utils.fromWei(project_info[5], "ether") + " ehter";
 
+    let donor_list = document.getElementById('donor_list');
+    while(0 < donor_list.rows.length) {
+      donor_list.deleteRow(0);
+    }
     for(var i = 0; i < donation_info[1].length; i++) {
       console.log(i, donation_info[1][i]);
       console.log(i, this.web3.utils.fromWei(donation_info[2][i], "ether"));
@@ -231,6 +235,7 @@ const App = {
       console.log(contract);
       console.log(this.project_list_contract_address);
       console.log(typeof this.project_list_contract_address);
+      this.setStatus("deploying your project... (please wait)");
       const deployedContract = await contract.deploy({
         data: donationArtifact.bytecode,
         arguments: [
@@ -249,9 +254,9 @@ const App = {
       })
       .send({from: this.account, gas: 4700000, gasPrice:100});
       console.log(deployedContract);
-
       console.log(deployedContract.options.address);
-      this.set_donation_address(deployedContract.options.address);
+      this.setStatus("deploy complete!");
+      // this.set_donation_address(deployedContract.options.address);
       // await this.donation_meta.methods._register_to_project_list(this.project_list_contract_address).send({from: this.account});
       window.location.href = "./index.html";
     // }

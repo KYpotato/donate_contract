@@ -13,8 +13,6 @@ module.exports = function(deployer) {
       web3.utils.toWei("0.5", "ether"),   // lower limit
       Project_list.address
       );
-    console.log(Project_list.address);
-    console.log(typeof Project_list.address);
     return;
   })
 };
