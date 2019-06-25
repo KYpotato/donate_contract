@@ -1,11 +1,14 @@
 import Web3 from "web3";
 import donationArtifact from "../../build/contracts/Donation.json";
+import projectListArtifact from "../../build/contracts/Project_list.json";
 
 const App = {
   web3: null,
   account: null,
-  meta: null,
-  contract_address: null,
+  donation_meta: null,
+  donation_contract_address: null,
+  project_list_meta: null,
+  project_list_contract_address: null,
 
   start: async function() {
     const { web3 } = this;
@@ -13,15 +16,27 @@ const App = {
     try {
       // get contract instance
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = donationArtifact.networks[networkId];
-      this.meta = new web3.eth.Contract(
+      console.log(networkId);
+      const donationDeployedNetwork = donationArtifact.networks[networkId];
+      console.log(donationArtifact);
+      console.log(donationDeployedNetwork);
+      this.donation_meta = new web3.eth.Contract(
         donationArtifact.abi,
-        deployedNetwork.address,
+        donationDeployedNetwork.address,
       );
+      console.log("contract address", donationDeployedNetwork.address);
+      this.donation_contract_address = donationDeployedNetwork.address;
 
-      console.log("contract address", deployedNetwork.address);
+      const projectListDeployedNetwork = projectListArtifact.networks[networkId];
+      console.log(projectListArtifact);
+      console.log(projectListDeployedNetwork);
+      this.project_list_meta = new web3.eth.Contract(
+        projectListArtifact.abi,
+        projectListDeployedNetwork.address,
+      )
 
-      this.contract_address = deployedNetwork.address;
+      console.log("contract address", projectListDeployedNetwork.address);
+      this.project_list_contract_address = projectListDeployedNetwork.address;
 
       // get accounts
       const accounts = await web3.eth.getAccounts();
@@ -29,32 +44,40 @@ const App = {
 
       console.log("account", this.account);
 
-      await this.refreshProjectInfo();
+      let page = window.location.href.split('/').pop();
 
-      let recipient_address = await this.get_recipient();
-      console.log("recipient", recipient_address);
-      if( this.account == recipient_address) {
-        document.getElementById("for_donor").style.display = "none";
-        document.getElementById("for_recipient").style.display = "display";
+      if(page == 'index.html'){
+        await this.refreshProjectInfo();
+
+        let recipient_address = await this.get_recipient();
+        console.log("recipient", recipient_address);
+        if( this.account == recipient_address) {
+          document.getElementById("for_donor").style.display = "none";
+          document.getElementById("for_recipient").style.display = "display";
+        }
+        else {
+          document.getElementById("for_donor").style.display = "display";
+          document.getElementById("for_recipient").style.display = "none";
+          this.refreshAmount();
+        }
       }
-      else {
-        document.getElementById("for_donor").style.display = "display";
-        document.getElementById("for_recipient").style.display = "none";
-        this.refreshAmount();
-      }
+
+      this.refresh_project_list();
+
     } catch (error) {
       console.error("Could not connect to contract or chain.");
+      console.log(error);
     }
   },
 
   get_recipient: async function() {
-    const { recipient } = this.meta.methods;
+    const { recipient } = this.donation_meta.methods;
     return await recipient().call();
   },
 
   refreshProjectInfo: async function() {
-    console.log(this.meta.methods);
-    const { get_project_info, get_donation_info, check_passed_term, state } = this.meta.methods;
+    console.log(this.donation_meta.methods);
+    const { get_project_info, get_donation_info, check_passed_term, state } = this.donation_meta.methods;
     console.log(get_project_info());
     let project_info = await get_project_info().call();
     console.log(project_info);
@@ -79,7 +102,7 @@ const App = {
     }
 
     document.getElementById("state").innerHTML = state_string;
-    document.getElementById("contract_address").innerHTML = this.contract_address;
+    document.getElementById("contract_address").innerHTML = this.donation_contract_address;
     document.getElementById("total").innerHTML = this.web3.utils.fromWei(donation_info[0], "ether") + " ether";
     document.getElementById("num_of_donors").innerHTML = donation_info[1].length + " addresses";
     document.getElementById("term").innerHTML = project_info[0] + " block";
@@ -97,14 +120,14 @@ const App = {
   },
 
   refreshAmount: async function() {
-    const { amount_list } = this.meta.methods;
+    const { amount_list } = this.donation_meta.methods;
     const amount = await amount_list(this.account).call();
 
     document.getElementById("donated_amount").innerHTML = (amount != null ? this.web3.utils.fromWei(amount, "ether") : "0") + " ether";
   },
 
   refreshButtons: async function() {
-    const { check_passed_term, state } = this.meta.methods;
+    const { check_passed_term, state } = this.donation_meta.methods;
     let is_passed_deadline = await check_passed_term().call();
     let project_state = await state().call();
 
@@ -132,7 +155,7 @@ const App = {
   },
 
   donate: async function() {
-    const { donate } = this.meta.methods;
+    const { donate } = this.donation_meta.methods;
     const amount = document.getElementById('amount_donate');
 
     this.setStatus("donating... (please wait)");
@@ -147,7 +170,7 @@ const App = {
   },
 
   refund: async function() {
-    const { refund } = this.meta.methods;
+    const { refund } = this.donation_meta.methods;
     const amount = document.getElementById("amount_refund");
 
     this.setStatus("refund... (please wait)");
@@ -159,12 +182,12 @@ const App = {
   },
 
   cancel_and_refund: async function() {
-    const { cancel_and_refund } = this.meta.methods;
+    const { cancel_and_refund } = this.donation_meta.methods;
     await cancel_and_refund().send({from: this.account});
   },
 
   withdraw: async function() {
-    const { withdraw } = this.meta.methods;
+    const { withdraw } = this.donation_meta.methods;
     await withdraw().send({from: this.account});
   },
 
@@ -172,6 +195,67 @@ const App = {
     const status = document.getElementById("status");
     status.innerHTML = message;
   },
+
+  deploy: async function() {
+    console.log('deploy');
+    const { web3 } = this;
+
+    // try{
+      console.log('bytecode');
+      console.log(donationArtifact.abi);
+      const contract = new web3.eth.Contract(donationArtifact.abi);
+      console.log('contract');
+      console.log(contract);
+      console.log(this.project_list_contract_address);
+      console.log(typeof this.project_list_contract_address);
+      const deployedContract = await contract.deploy({
+        data: donationArtifact.bytecode,
+        arguments: [
+          100, // term
+          App.web3.utils.toWei("0.01", "ether"),  // min
+          App.web3.utils.toWei("0.1", "ether"),   // max
+          App.web3.utils.toWei("0.005", "ether"), // unit
+          App.web3.utils.toWei("1", "ether"),     // upper limit
+          App.web3.utils.toWei("0.5", "ether"),   // lower limit
+          // this.project_list_contract_address      // project list contract address
+        ]
+      }, (err, res) => {
+        console.log('result');
+        console.log(err);
+        console.log(res);
+      })
+      .send({from: this.account});
+      console.log(deployedContract);
+
+      console.log(deployedContract.options.address);
+    // }
+    // catch(err) {
+    //   console.log(err);
+    // }
+  },
+
+  register_project: async function(){
+    // await this.project_list_meta.methods.register_project().send({from: this.account});
+    // await this.donation_meta.methods._register_to_project_list().send({from: this.account});
+    await this.donation_meta.methods._register_to_project_list(this.project_list_contract_address).send({from: this.account});
+    // console.log(projects);
+  },
+
+  get_projects: async function(){
+    const { get_all_projects } = this.project_list_meta.methods;
+    let projects = await get_all_projects().call();
+    console.log(projects);
+    return projects;
+  },
+
+  refresh_project_list: async function() {
+    let project_list = await this.get_projects();
+
+    for(var i = 0; i < project_list.length; i++) {
+      console.log(i, project_list[i]);
+      $("#project_list").append("<tr><td>" + project_list[i] + "</td></tr>");
+    }
+  }
 };
 
 window.App = App;

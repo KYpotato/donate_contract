@@ -1,10 +1,12 @@
 pragma solidity >=0.4.0 <0.6.0;
 
 import "./SafeMath.sol";
+import "./Project_list.sol";
 
 contract Donation {
-
     using SafeMath for uint256;
+
+    Project_list public project_list;
 
     enum State { Open, Canceled }
     
@@ -53,6 +55,7 @@ contract Donation {
         _;
     }
 
+    // constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit, address _list_address) public {
     constructor(uint _term, uint _min, uint _max, uint _unit, uint _upper_limit, uint _lower_limit) public {
 
         require(_min <= _max, "Invalid min and max");
@@ -71,6 +74,18 @@ contract Donation {
         total_value = 0;
 
         state = State.Open;
+
+        // _register_to_project_list(msg.sender);
+
+        // project_list = Project_list(_list_address);
+        // project_list.register_project();
+    }
+
+    // function _register_to_project_list() public {
+    function _register_to_project_list(address _list_address) public {
+        project_list = Project_list(_list_address);
+
+        project_list.register_project();
     }
 
     function withdraw() public is_recipient is_passed_term is_not_canceled {

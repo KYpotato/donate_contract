@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>New Project</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  </head>
+  <body class="row">
+    <div class="container">
+      <div class="row margin-top-3">
+        <!-- <div class="col-sm-12"> -->
+          <h2>New Project</h2><br>
+          <a href="./index.html">home</a>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>term</th>
+                <td><input type="text" id="term" placeholder="e.g. 100" style="display: inline" /></td>
+              </tr>
+              <tr>
+                <th>min</th>
+                <td><input type="text" id="min" placeholder="e.g. 0.01" style="display: inline" /></td>
+              </tr>
+              <tr>
+                <th>max</th>
+                <td><input type="text" id="max" placeholder="e.g. 0.1" style="display: inline" /></td>
+              </tr>
+              <tr>
+                <th>unit</th>
+                <td><input type="text" id="unit" placeholder="e.g. 0.005" style="display: inline" /></td>
+              </tr>
+              <tr>
+                <th>lower limit</th>
+                <td><input type="text" id="lower_limit" placeholder="e.g. 0.5" style="display: inline" /></td>
+              </tr>
+              <tr>
+                <th>upper limit</th>
+                <td><input type="text" id="upper_limit" placeholder="e.g. 1" style="display: inline" /></td>
+              </tr>
+            </table>
+          </div>
+          <button onclick="App.deploy()">deploy</button>
+        <!-- </div> -->
+      </div>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>

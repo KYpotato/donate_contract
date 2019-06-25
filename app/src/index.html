@@ -14,10 +14,21 @@
   </style>
   <body class="row">
     <h1 class="text-center banner">Donation Contract</h1>
-
     <div class="container">
+    <a href="./new_project.html">New Project</a><br>
+    <button onclick="App.get_projects()">update list</button>
+    <button onclick="App.register_project()">register project</button>
+    <h2>Project List</h2>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr><th>Contract Address</th></tr>
+        </thead>
+        <tbody id="project_list"></tbody>
+      </table>
+    </div>
     <div class="row margin-top-3">
-      <div class="col-sm-7">
+      <div class="col-sm-6">
         <h2>Project Infomation</h2>
         <div class="table-responsive">
         <table class="table table-bordered">
@@ -64,7 +75,7 @@
         </table>
         </div>
       </div>
-      <div class="col-sm-offset-1 col-sm-4">
+      <div class="col-sm-offset-1 col-sm-5">
         <h2>Donors Infomation</h2>
         <div class="table-responsive">
           <table class="table table-bordered">
