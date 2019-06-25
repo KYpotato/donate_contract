@@ -14,57 +14,46 @@ const App = {
     const { web3 } = this;
 
     try {
+      let page = window.location.href.split('/').pop();
+      console.log(page);
+
       // get contract instance
       const networkId = await web3.eth.net.getId();
       // console.log(networkId);
-      const donationDeployedNetwork = donationArtifact.networks[networkId];
-      // console.log(donationArtifact);
-      // console.log(donationDeployedNetwork);
-      this.donation_meta = new web3.eth.Contract(
-        donationArtifact.abi,
-        donationDeployedNetwork.address,
-      );
-      console.log("donation contract address", donationDeployedNetwork.address);
-      this.donation_contract_address = donationDeployedNetwork.address;
-
-      const projectListDeployedNetwork = projectListArtifact.networks[networkId];
-      // console.log(projectListArtifact);
-      // console.log(projectListDeployedNetwork);
-      this.project_list_meta = new web3.eth.Contract(
-        projectListArtifact.abi,
-        projectListDeployedNetwork.address,
-      )
-
-      console.log("project list contract address", projectListDeployedNetwork.address);
-      this.project_list_contract_address = projectListDeployedNetwork.address;
 
       // get accounts
       const accounts = await web3.eth.getAccounts();
       this.account = accounts[0];
-
       console.log("account", this.account);
 
-      let page = window.location.href.split('/').pop();
-      console.log(page);
+      const projectListDeployedNetwork = projectListArtifact.networks[networkId];
+      // console.log(projectListArtifact);
+      // console.log(projectListDeployedNetwork);
+      this.project_list_contract_address = projectListDeployedNetwork.address;
+      this.project_list_meta = new web3.eth.Contract(
+        projectListArtifact.abi,
+        this.project_list_contract_address,
+      );
+      console.log("project list contract address", this.project_list_contract_address);
 
       switch(page) {
-        case 'index.html':
-          this.refresh_project_list();
-          break;
         case 'new_project.html':
           break;
+        case 'index.html':
         case 'project.html':
-          await this.refreshProjectInfo();
-          let recipient_address = await this.get_recipient();
-          console.log("recipient", recipient_address);
-          if( this.account == recipient_address) {
-            document.getElementById("for_donor").style.display = "none";
-            document.getElementById("for_recipient").style.display = "display";
-          }
-          else {
-            document.getElementById("for_donor").style.display = "display";
-            document.getElementById("for_recipient").style.display = "none";
-            this.refreshAmount();
+          this.refresh_project_list();
+          const donationDeployedNetwork = donationArtifact.networks[networkId];
+          // console.log(donationArtifact);
+          // console.log(donationDeployedNetwork);
+          // this.donation_contract_address = donationDeployedNetwork.address;
+          this.donation_meta = new web3.eth.Contract(
+            donationArtifact.abi,
+            this.donation_contract_address,
+          );
+          console.log("donation contract address", this.donation_contract_address);
+
+          if(this.donation_contract_address != null) {
+            await this.displayProjectInfo();
           }
           break;
         default:
@@ -80,6 +69,21 @@ const App = {
   get_recipient: async function() {
     const { recipient } = this.donation_meta.methods;
     return await recipient().call();
+  },
+
+  displayProjectInfo: async function() {
+    await this.refreshProjectInfo();
+    let recipient_address = await this.get_recipient();
+    console.log("recipient", recipient_address);
+    if( this.account == recipient_address) {
+      document.getElementById("for_donor").style.display = "none";
+      document.getElementById("for_recipient").style.display = "display";
+    }
+    else {
+      document.getElementById("for_donor").style.display = "display";
+      document.getElementById("for_recipient").style.display = "none";
+      this.refreshAmount();
+    }
   },
 
   refreshProjectInfo: async function() {
@@ -260,8 +264,20 @@ const App = {
 
     for(var i = 0; i < project_list.length; i++) {
       console.log(i, project_list[i]);
-      $("#project_list").append("<tr><td><a href='./project.html'>" + project_list[i] + "</a></td></tr>");
+      $("#project_list").append(`<tr><td><a href='javascript:App.go_to_project(${i}, ${project_list[i]})'>${project_list[i]}</a></td></tr>`);
     }
+  },
+
+  go_to_project: async function(row_index) {
+    const { web3 } = this;
+    let tbody = document.getElementById('project_list')
+    this.donation_contract_address = tbody.rows[row_index].cells[0].firstChild.innerHTML;
+    this.donation_meta = new web3.eth.Contract(
+      donationArtifact.abi,
+      this.donation_contract_address,
+    );
+    // window.location.href = "./project.html";
+    await this.displayProjectInfo();
   }
 };
 

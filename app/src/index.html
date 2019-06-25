@@ -28,6 +28,95 @@
       </table>
     </div>
 
+    <div class="row margin-top-3">
+      <div class="col-sm-6">
+        <h2>Project Infomation</h2>
+        <div class="table-responsive">
+        <table class="table table-bordered">
+          <tr>
+            <td>project status: </td>
+            <td colspan="2" id="state"></td>
+          </tr>
+          <tr>
+            <td>contract address: </td>
+            <td colspan="2" id="contract_address"></td>
+          </tr>
+          <tr>
+            <td>total amount: </td>
+            <td id="total"></td>
+          </tr>
+          <tr>
+            <td>number of donors: </td>
+            <td id="num_of_donors"></td>
+          </tr>
+          <tr>
+            <td>term: </td>
+            <td id="term"></td>
+          </tr>
+          <tr>
+            <td>min: </td>
+            <td id="min"></td>
+          </tr>
+          <tr>
+            <td>max: </td>
+            <td id="max"></td>
+          </tr>
+          <tr>
+            <td>unit: </td>
+            <td id="unit"></td>
+          </tr>
+          <tr>
+            <td>upper limit: </td>
+            <td id="upperlimit"></td>
+          </tr>
+          <tr>
+            <td>lower limit: </td>
+            <td id="lowerlimit"></td>
+          </tr>
+        </table>
+        </div>
+      </div>
+      <div class="col-sm-offset-1 col-sm-5">
+        <h2>Donors Infomation</h2>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Address</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="donor_list"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row margin-bottom-3">
+      <div id="for_donor">
+        <h2>Your Information</h2>
+        <p>
+        you donated <label id="donated_amount">loading ...</label><br>
+        </p>
+  
+        <label>donate</label><br>
+        <input type="text" id="amount_donate" placeholder="e.g. 0.5" style="display: inline" />
+        <button onclick="App.donate()">donate eth</button><br>
+  
+        <label>refund</label><br>
+        <input type="text" id="amount_refund" placeholder="e.g. 0.1" style="display: inline" />
+        <button onclick="App.refund()">refund eth</button>
+      </div>
+  
+      <div id="for_recipient">
+        <h2>Functions for recipient</h2>
+        <button onclick="App.cancel_and_refund()">cancel and refund</button>
+        <br>
+        <button onclick="App.withdraw()">withdraw</button>
+      </div>
+    </div>
+    
+    <a href="javascript:App.test()">test</a>
+
     <p id="status"></p>
     <p>
       <strong>Hint:</strong> open the browser developer console to view any
