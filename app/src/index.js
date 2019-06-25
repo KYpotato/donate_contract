@@ -17,7 +17,6 @@ const App = {
       let page = window.location.href.split('/').pop();
       console.log(page);
 
-      document.getElementById('project_info_div').style.display = 'none';
 
       // get contract instance
       const networkId = await web3.eth.net.getId();
@@ -43,6 +42,7 @@ const App = {
           break;
         case 'index.html':
         case 'project.html':
+          document.getElementById('project_info_div').style.display = 'none';
           this.refresh_project_list();
           const donationDeployedNetwork = donationArtifact.networks[networkId];
           // console.log(donationArtifact);
@@ -243,6 +243,9 @@ const App = {
       console.log(deployedContract);
 
       console.log(deployedContract.options.address);
+      this.set_donation_address(deployedContract.options.address);
+      await this.donation_meta.methods._register_to_project_list(this.project_list_contract_address).send({from: this.account});
+      window.location.href = "./index.html";
     // }
     // catch(err) {
     //   console.log(err);
@@ -273,16 +276,20 @@ const App = {
   },
 
   go_to_project: async function(row_index) {
+    let tbody = document.getElementById('project_list');
+    this.set_donation_address(tbody.rows[row_index].cells[0].firstChild.innerHTML);
+    await this.displayProjectInfo();
+    document.getElementById('project_info_div').style.display = 'block';
+  },
+
+  set_donation_address: async function(address) {
     const { web3 } = this;
-    let tbody = document.getElementById('project_list')
-    this.donation_contract_address = tbody.rows[row_index].cells[0].firstChild.innerHTML;
+    console.log(address);
+    this.donation_contract_address = address;
     this.donation_meta = new web3.eth.Contract(
       donationArtifact.abi,
       this.donation_contract_address,
     );
-    // window.location.href = "./project.html";
-    await this.displayProjectInfo();
-    document.getElementById('project_info_div').style.display = 'block';
   }
 };
 
