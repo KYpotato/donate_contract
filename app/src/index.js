@@ -218,12 +218,12 @@ const App = {
       const deployedContract = await contract.deploy({
         data: donationArtifact.bytecode,
         arguments: [
-          100, // term
-          App.web3.utils.toWei("0.01", "ether"),  // min
-          App.web3.utils.toWei("0.1", "ether"),   // max
-          App.web3.utils.toWei("0.005", "ether"), // unit
-          App.web3.utils.toWei("1", "ether"),     // upper limit
-          App.web3.utils.toWei("0.5", "ether"),   // lower limit
+          parseInt(document.getElementById('term').value), // term
+          App.web3.utils.toWei(document.getElementById('min').value, "ether"),  // min
+          App.web3.utils.toWei(document.getElementById('max').value, "ether"),   // max
+          App.web3.utils.toWei(document.getElementById('unit').value, "ether"), // unit
+          App.web3.utils.toWei(document.getElementById('upper_limit').value, "ether"),     // upper limit
+          App.web3.utils.toWei(document.getElementById('lower_limit').value, "ether"),   // lower limit
           // this.project_list_contract_address      // project list contract address
         ]
       }, (err, res) => {
