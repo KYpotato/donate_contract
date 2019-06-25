@@ -252,13 +252,6 @@ const App = {
     // }
   },
 
-  register_project: async function(){
-    // await this.project_list_meta.methods.register_project().send({from: this.account});
-    // await this.donation_meta.methods._register_to_project_list().send({from: this.account});
-    await this.donation_meta.methods._register_to_project_list(this.project_list_contract_address).send({from: this.account});
-    // console.log(projects);
-  },
-
   get_projects: async function(){
     const { get_all_projects } = this.project_list_meta.methods;
     let projects = await get_all_projects().call();
@@ -269,10 +262,12 @@ const App = {
   refresh_project_list: async function() {
     let project_list = await this.get_projects();
 
-    for(var i = 0; i < project_list.length; i++) {
-      console.log(i, project_list[i]);
-      $("#project_list").append(`<tr><td><a href='javascript:App.go_to_project(${i}, ${project_list[i]})'>${project_list[i]}</a></td></tr>`);
+    for(var i = 0; i < project_list[0].length; i++) {
+      console.log(i, project_list[0][i], project_list[1][i]);
+      $("#project_list").append(`<tr><td><a href='javascript:App.go_to_project(${i}, ${project_list[0][i]})'>${project_list[0][i]}</a><label>${this.account==project_list[1][i]?'&nbsp my project':''}</label></td></tr>`);
     }
+
+    console.log(document.getElementById('project_list'));
   },
 
   go_to_project: async function(row_index) {

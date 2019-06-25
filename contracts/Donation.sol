@@ -85,7 +85,7 @@ contract Donation {
     function _register_to_project_list(address _list_address) public {
         project_list = Project_list(_list_address);
 
-        project_list.register_project();
+        project_list.register_project(msg.sender);
     }
 
     function withdraw() public is_recipient is_passed_term is_not_canceled {
