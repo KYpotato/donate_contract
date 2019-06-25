@@ -11,7 +11,7 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([{ from: "./src/index.html", to: "index.html" }]),
     new CopyWebpackPlugin([{ from: "./src/new_project.html", to: "new_project.html" }]),
-    new CopyWebpackPlugin([{ from: "./src/my_project.html", to: "my_project.html" }]),
+    new CopyWebpackPlugin([{ from: "./src/project.html", to: "project.html" }]),
   ],
   devServer: { contentBase: path.join(__dirname, "dist"), compress: true },
 };
