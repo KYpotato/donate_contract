@@ -17,7 +17,6 @@ const App = {
       let page = window.location.href.split('/').pop();
       console.log(page);
 
-
       // get contract instance
       const networkId = await web3.eth.net.getId();
       // console.log(networkId);
@@ -103,6 +102,10 @@ const App = {
     let project_state = await state().call();
     console.log(project_state);
 
+    const { web3 } = this;
+    let blocknumber = await web3.eth.getBlockNumber()
+    console.log('blocknumber', blocknumber);
+
     let state_string;
     if (project_state == 1) {
       state_string = "This project has benn canceled";
@@ -112,7 +115,12 @@ const App = {
         state_string = "The deadline has passed";
       }
       else {
-        state_string = "This project is open";
+        if(project_info[0] < blocknumber){
+          state_string = "The deadline has passed";
+        }
+        else {
+          state_string = "This project is open";
+        }
       }
     }
 
